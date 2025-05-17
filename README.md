@@ -117,3 +117,6 @@ curl -X POST http://localhost:5678/webhook/invoke_n8n_agent \
 - Ollama running locally or accessible via URL
 - Qdrant running locally or accessible via URL
 - PostgreSQL running locally or accessible via URL
+
+## Warning
+Note that whenever you create embeddings, the previous embeddings and the related collection on Qdrant are deleted
