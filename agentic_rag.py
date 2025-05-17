@@ -53,7 +53,7 @@ def create_embeddings_from_pdfs():
         print(f"Processing file: {pdf_file}")
         try:
             # Load the PDF
-            loader = PyPDFLoader(pdf_file)
+            loader = PyPDFLoader(pdf_file, mode="single")
             documents = loader.load()
             
             # Split the document into chunks

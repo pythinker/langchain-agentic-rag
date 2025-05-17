@@ -84,7 +84,7 @@ def create_embeddings_from_pdfs() -> Optional[QdrantVectorStore]:
         print(f"Processing file: {pdf_file}")
         try:
             # Load the PDF
-            loader = PyPDFLoader(pdf_file)
+            loader = PyPDFLoader(pdf_file, mode="single")
             documents = loader.load()
             
             # Split the document into chunks
@@ -178,7 +178,7 @@ def create_agent():
     Create an agentic RAG system with chat capabilities and document search
     """
     # Initialize the chat model
-    llm = ChatOllama(model=CHAT_MODEL, temperature=0.7)
+    llm = ChatOllama(model=CHAT_MODEL, temperature=0.0)
     
     # Define tools
     tools = [search_documents]
