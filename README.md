@@ -31,6 +31,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+The requirements.txt file contains exact version specifications for all dependencies to ensure compatibility.
+
 3. Copy the environment template and edit as needed:
 ```bash
 cp env.template .env
@@ -93,6 +95,11 @@ curl -X POST http://localhost:5678/webhook/invoke_n8n_agent \
      -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 
+4. Access the automatically generated API documentation:
+```
+http://localhost:5678/docs
+```
+
 ## Implementation Details
 
 ### Components
@@ -102,14 +109,26 @@ curl -X POST http://localhost:5678/webhook/invoke_n8n_agent \
 3. **Vector Storage**: Using Qdrant for similarity search
 4. **Chat History**: Using PostgreSQL for persistent conversation storage
 5. **Agent**: Using LangChain tools and Ollama for LLM capabilities
-6. **API Server**: Flask-based server that replicates the n8n webhooks
+6. **API Server**: FastAPI-based server that replicates the n8n webhooks
 
 ### Key Files
 
 - `agent_rag.py`: The main implementation of the LangChain-based Agentic RAG system
-- `api_server.py`: A Flask server that provides API endpoints matching the original n8n webhooks
-- `agentic_rag.py`: Basic implementation for document embedding (kept for compatibility)
-- `query_rag.py`: Simple query script for document retrieval (kept for compatibility)
+- `api_server.py`: A FastAPI server that provides API endpoints matching the original n8n webhooks
+
+## Dependencies
+
+The project uses specific versions of the following key packages:
+- langchain==0.3.25
+- langchain-ollama==0.3.3
+- langchain-qdrant==0.2.0
+- langchain-postgres==0.0.14
+- qdrant-client==1.14.2
+- fastapi==0.115.12
+- uvicorn==0.34.2
+- psycopg2-binary==2.9.10
+
+See requirements.txt for the complete list of dependencies with exact versions.
 
 ## Requirements
 
