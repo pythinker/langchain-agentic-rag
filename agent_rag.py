@@ -32,7 +32,8 @@ CHUNK_SIZE = 2000
 CHUNK_OVERLAP = 200
 EMBEDDING_MODEL = "nomic-embed-text"  # Matches what was used in n8n workflow
 CHAT_MODEL = "qwen3:4b"  # Matches what was used in n8n workflow
-QDRANT_URL = "http://localhost:6333"  # Default for local Qdrant
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")  # Use environment variable or default
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")  # Use environment variable or default
 POSTGRES_CONNECTION_STRING = os.getenv(
     "POSTGRES_CONNECTION_STRING", 
     "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -65,8 +66,8 @@ def create_embeddings_from_pdfs() -> Optional[QdrantVectorStore]:
     
     print(f"Found {len(pdf_files)} PDF files: {pdf_files}")
     
-    # Initialize embeddings model
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    # Initialize embeddings model with base_url parameter
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
     
     # Initialize Qdrant client for collection management
     client = QdrantClient(url=QDRANT_URL)
@@ -133,8 +134,8 @@ def get_vector_store() -> QdrantVectorStore:
     """
     Connect to the existing Qdrant vector store
     """
-    # Initialize embeddings model
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    # Initialize embeddings model with base_url parameter
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
     
     # Initialize Qdrant client
     client = QdrantClient(url=QDRANT_URL)
@@ -177,8 +178,8 @@ def create_agent():
     """
     Create an agentic RAG system with chat capabilities and document search
     """
-    # Initialize the chat model
-    llm = ChatOllama(model=CHAT_MODEL, temperature=0.0)
+    # Initialize the chat model with base_url parameter
+    llm = ChatOllama(model=CHAT_MODEL, temperature=0.0, base_url=OLLAMA_BASE_URL)
     
     # Define tools
     tools = [search_documents]
