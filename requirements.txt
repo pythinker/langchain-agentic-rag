@@ -17,4 +17,5 @@ pydantic-settings==2.9.1
 psycopg==3.2.9
 psycopg-pool==3.2.6
 psycopg2-binary==2.9.10
-ollama==0.4.8 
+ollama==0.4.8
+httpx==0.28.1 

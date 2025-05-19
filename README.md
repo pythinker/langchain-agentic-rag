@@ -1,12 +1,12 @@
 # LangChain Agentic RAG
 
-A complete implementation of the Agentic RAG pattern using LangChain, replacing the n8n workflow from the original project.
+A complete implementation of the Agentic RAG pattern using LangChain, with n8n for visualization and diagnosis.
 
 ![Agentic RAG Architecture](docs/agentic-rag.png)
 
 ## Overview
 
-This project is a LangChain-based implementation of the Agentic RAG (Retrieval Augmented Generation) system that was originally implemented using n8n. It provides the same functionality but uses LangChain components directly instead of n8n nodes.
+This project implements an Agentic RAG (Retrieval Augmented Generation) system using LangChain with a FastAPI server that provides all the functionality, while n8n is used for visualization and workflow diagnosis using HTTP Request nodes.
 
 The system:
 
@@ -14,7 +14,17 @@ The system:
 - Stores embeddings in Qdrant for similarity search
 - Provides a chat interface with persistent conversation history in PostgreSQL
 - Uses an agent with tools to intelligently answer questions about the documents
-- Exposes API endpoints that match the original n8n webhooks
+- Exposes API endpoints that are called by n8n's HTTP Request nodes
+
+## Architecture
+
+The project uses a decoupled architecture:
+
+1. **FastAPI Server**: Provides all the RAG functionality through RESTful endpoints
+2. **n8n**: Visualizes the workflow and provides a user interface, but only uses HTTP Request nodes to call the API server
+3. **Qdrant**: Vector database for storing document embeddings
+4. **PostgreSQL**: Relational database for storing chat history
+5. **Ollama**: Local LLM for text generation and embeddings
 
 ## Setup
 
@@ -24,97 +34,75 @@ git clone <repository-url>
 cd langchain-agentic-rag
 ```
 
-2. Create a virtual environment and install dependencies:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-The requirements.txt file contains exact version specifications for all dependencies to ensure compatibility.
-
-3. Copy the environment template and edit as needed:
+2. Copy the environment template and edit as needed:
 ```bash
 cp env.template .env
 ```
 
-4. Make sure the following services are running:
-- Ollama (http://localhost:11434)
-- Qdrant (http://localhost:6333)
-- PostgreSQL (localhost:5432)
-
-You can use the docker-compose.yml file from the original project to start these services:
+3. Start all services with Docker Compose:
 ```bash
 docker compose up -d
 ```
 
-5. Set up the PostgreSQL database for chat history:
+This will start:
+- PostgreSQL database
+- pgAdmin web interface
+- Qdrant vector database
+- FastAPI server (our custom implementation)
+- n8n (for visualization)
+
+4. Access the services:
+- n8n: http://localhost:5678
+- API Server: http://localhost:8000
+- pgAdmin: http://localhost:5050
+- Qdrant: http://localhost:6333
+
+## Using the System
+
+### Through n8n
+
+1. In n8n, import the workflow file `agentic_rag_workflow_http.json` which uses HTTP Request nodes
+2. Trigger the "Create Embeddings" workflow to process PDF files in the shared directory
+3. Use the chat interface in n8n to interact with the agent
+
+### Directly via API
+
+The FastAPI server provides these main endpoints:
+
+1. Create embeddings:
 ```bash
-python agent_rag.py setup_db
-```
-
-## Usage
-
-### Command Line Interface
-
-The application provides a command-line interface for interacting with the system:
-
-1. Create embeddings from PDF files in the shared directory:
-```bash
-python agent_rag.py create_embeddings
+curl -X GET http://localhost:8000/webhook/create_source_embeddings
 ```
 
 2. Chat with the agent:
 ```bash
-python agent_rag.py chat "What are the ingredients of Apple Berry Crisp?"
-```
-
-3. Continue a conversation with a specific session ID:
-```bash
-python agent_rag.py chat "How do I make it?" your-session-id
-```
-
-### Web API
-
-The application also provides a web API that mimics the original n8n webhooks:
-
-1. Start the API server:
-```bash
-python api_server.py
-```
-
-2. Create embeddings:
-```bash
-curl -X GET http://localhost:5678/webhook/create_source_embeddings
-```
-
-3. Chat with the agent:
-```bash
-curl -X POST http://localhost:5678/webhook/invoke_n8n_agent \
+curl -X POST http://localhost:8000/webhook/invoke_n8n_agent \
      -H "Content-Type: application/json" \
      -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 
-4. Access the automatically generated API documentation:
+3. Access the API documentation:
 ```
-http://localhost:5678/docs
+http://localhost:8000/docs
 ```
 
 ## Implementation Details
 
 ### Components
 
-1. **Document Processing**: PDF loading and text splitting using LangChain document loaders
-2. **Embedding Generation**: Using Ollama's nomic-embed-text model
-3. **Vector Storage**: Using Qdrant for similarity search
-4. **Chat History**: Using PostgreSQL for persistent conversation storage
-5. **Agent**: Using LangChain tools and Ollama for LLM capabilities
-6. **API Server**: FastAPI-based server that replicates the n8n webhooks
+1. **API Server** (`api_server.py`): FastAPI server that provides all RAG functionality
+2. **Agent Logic** (`agent_rag.py`): Core LangChain implementation of the Agentic RAG system
+3. **n8n Workflow** (`agentic_rag_workflow_http.json`): n8n workflow using HTTP Request nodes
+4. **Docker Configuration**: Multi-container setup with services for API, n8n, databases
 
-### Key Files
+### Project Structure
 
-- `agent_rag.py`: The main implementation of the LangChain-based Agentic RAG system
-- `api_server.py`: A FastAPI server that provides API endpoints matching the original n8n webhooks
+- `api_server.py`: FastAPI server implementation
+- `agent_rag.py`: LangChain agent implementation
+- `agentic_rag_workflow_http.json`: n8n workflow with HTTP Request nodes
+- `docker-compose.yml`: Docker Compose configuration for all services
+- `Dockerfile.api`: Dockerfile for the API server
+- `shared/`: Directory for PDF files to be processed
 
 ## Dependencies
 
@@ -132,10 +120,8 @@ See requirements.txt for the complete list of dependencies with exact versions.
 
 ## Requirements
 
-- Python 3.8+
+- Docker and Docker Compose
 - Ollama running locally or accessible via URL
-- Qdrant running locally or accessible via URL
-- PostgreSQL running locally or accessible via URL
 
 ## Warning
 Note that whenever you create embeddings, the previous embeddings and the related collection on Qdrant are deleted
