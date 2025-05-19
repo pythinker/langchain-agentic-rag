@@ -6,15 +6,14 @@
         "url": "http://api-server:8000/api/chat/memory/{{$json.sessionId}}",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "518a424b-3d71-40c7-adc6-fdb092a19302",
       "name": "HTTP Request - Chat Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -320,
+        -220,
         -60
       ],
       "notesInFlow": false
@@ -25,20 +24,7 @@
         "url": "http://api-server:8000/api/chat/ollama",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "prompt",
-              "value": "={{ $json.chatInput }}"
-            },
-            {
-              "name": "temperature",
-              "value": 0
-            }
-          ]
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "7a420eba-c9ff-4829-80c5-ab0abae3ade6",
       "name": "HTTP Request - Chat Model",
@@ -55,28 +41,15 @@
         "url": "http://api-server:8000/api/llm/ollama",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "prompt",
-              "value": "={{ $json.prompt }}"
-            },
-            {
-              "name": "temperature",
-              "value": 0
-            }
-          ]
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "95109074-b145-43e1-873c-f8848e90d18a",
       "name": "HTTP Request - LLM",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        580,
-        -40
+        500,
+        -80
       ]
     },
     {
@@ -85,20 +58,7 @@
         "url": "http://api-server:8000/api/vector_store/search",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "query",
-              "value": "={{ $json.query }}"
-            },
-            {
-              "name": "topK",
-              "value": 3
-            }
-          ]
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "baea6769-bb4c-49bf-9e86-9bb8b1f7f231",
       "name": "HTTP Request - Vector Search",
@@ -115,25 +75,15 @@
         "url": "http://api-server:8000/api/embeddings/ollama",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "bodyParametersUi": {
-          "parameter": [
-            {
-              "name": "texts",
-              "value": "={{ $json.texts }}",
-              "contentType": "json"
-            }
-          ]
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "4462c29f-f563-48fc-80f8-7809907f8899",
       "name": "HTTP Request - Embeddings",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        460,
-        20
+        280,
+        -80
       ]
     },
     {
@@ -141,8 +91,7 @@
         "url": "http://api-server:8000/webhook/create_source_embeddings",
         "options": {
           "allowUnauthorizedCerts": true
-        },
-        "responseFormat": "json"
+        }
       },
       "id": "d546c7f6-59ce-448e-9364-6ef162f90d9b",
       "name": "HTTP Request - Create Embeddings",
@@ -221,29 +170,29 @@
       "parameters": {
         "method": "POST",
         "url": "http://api-server:8000/webhook/invoke_n8n_agent",
-        "options": {
-          "allowUnauthorizedCerts": true
-        },
-        "bodyParametersUi": {
-          "parameter": [
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
             {
-              "name": "chatInput",
-              "value": "={{ $json.chatInput }}"
+              "name": "=chatInput",
+              "value": "={{ $json.body.chatInput }}"
             },
             {
               "name": "sessionId",
-              "value": "={{ $json.sessionId }}"
+              "value": "={{ $json.body.sessionId }}"
             }
           ]
         },
-        "responseFormat": "json"
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
       },
       "id": "c9cd1a9b-0df0-4832-864f-0f1adbcdbac9",
       "name": "HTTP Request - Invoke Agent",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -380,
+        -240,
         -280
       ]
     },
@@ -253,13 +202,13 @@
           "assignments": [
             {
               "id": "75ebfdef-c8e2-4c3e-b716-1479d0cc2a73",
-              "name": "chatInput",
+              "name": "body.chatInput",
               "value": "={{ $json.body.chatInput || $json.chatInput }}",
               "type": "string"
             },
             {
               "id": "59b7a20f-0626-4861-93e2-015d430c266e",
-              "name": "sessionId",
+              "name": "body.sessionId",
               "value": "={{ $json.body.sessionId || $json.sessionId || $timestamp }}",
               "type": "string"
             }
@@ -319,7 +268,6 @@
     },
     {
       "parameters": {
-        "httpMethod": "GET",
         "path": "create_embeddings",
         "responseMode": "responseNode",
         "options": {}
@@ -329,8 +277,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -760,
-        520
+        -480,
+        560
       ],
       "webhookId": "4b3b1838-d6b3-447e-9d79-d0931eddb9f9"
     },
@@ -430,15 +378,15 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b8a76f60-e283-4206-a6bb-74ea8373fa09",
+  "versionId": "ab891148-7848-44cd-bcb3-2750cfa29e20",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "b71261ef287c089eaf4614b32d1def77ccc52bab3c713582651a235ccad219a3"
   },
   "id": "MHy1fjGBR7okXQo0",
   "tags": []
-} 
+}
