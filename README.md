@@ -74,17 +74,17 @@ The FastAPI server provides these main endpoints:
 curl -X GET http://localhost:8000/webhook/create_source_embeddings
 ```
 ```bash
-curl -X GET http://localhost:5678/webhook/create_embeddings -H "Content-Type: application/json"
+curl -X GET http://localhost:5678/webhook/create_embeddings
 ```
 
 2. Chat with the agent:
 ```bash
 curl -X POST http://localhost:8000/webhook/invoke_n8n_agent \
-     -H "Content-Type: application/json" \
      -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 ```bash
-curl -X POST http://localhost:5678/webhook/invoke_agent -H "Content-Type: application/json" -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
+curl -X POST http://localhost:5678/webhook/invoke_agent \
+     -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 
 3. Access the API documentation:
