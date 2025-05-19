@@ -83,7 +83,8 @@ curl -X POST http://localhost:8000/webhook/invoke_n8n_agent \
      -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 ```bash
-curl -X POST http://localhost:5678/webhook/invoke_agent \
+curl -X POST http://localhost:5678/webhook/invoke_n8n_agent \
+     -H "Content-Type: application/json" \
      -d '{"chatInput": "What are the ingredients of Apple Berry Crisp?", "sessionId": "c324038d8b2944a0855c2e40441038e3"}'
 ```
 
