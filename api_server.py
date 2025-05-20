@@ -14,6 +14,7 @@ import uuid
 
 # Load environment variables
 load_dotenv()
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 # Constants
 EMBEDDING_MODEL = "nomic-embed-text"
@@ -114,7 +115,7 @@ async def generate_embeddings(texts: List[str] = Body(...)):
     Replacement for n8n Embeddings Ollama node
     """
     try:
-        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
         result = embeddings.embed_documents(texts)
         return {"embeddings": result}
     except Exception as e:
@@ -143,7 +144,7 @@ async def chat_with_ollama(request: OllamaModelRequest):
     Replacement for n8n Ollama Chat Model node
     """
     try:
-        chat_model = ChatOllama(model=CHAT_MODEL, temperature=request.temperature)
+        chat_model = ChatOllama(model=CHAT_MODEL, temperature=request.temperature, base_url=OLLAMA_BASE_URL)
         response = chat_model.invoke(request.prompt)
         return {"response": response.content}
     except Exception as e:
@@ -158,7 +159,7 @@ async def generate_with_ollama(request: OllamaModelRequest):
     Replacement for n8n Ollama Model node
     """
     try:
-        llm = ChatOllama(model=CHAT_MODEL, temperature=request.temperature)
+        llm = ChatOllama(model=CHAT_MODEL, temperature=request.temperature, base_url=OLLAMA_BASE_URL)
         response = llm.invoke(request.prompt)
         return {"response": response.content}
     except Exception as e:
